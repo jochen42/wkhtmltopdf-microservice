@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import os from 'os';
 import wkhtmltopdf from 'wkhtmltopdf';
 import config from './config';
 
@@ -11,6 +12,13 @@ app.use(bodyParser.raw({
 
 app.get('/', (req, res) => {
   res.send('Use POST /compile');
+});
+
+app.get('/ping', (req, res) => {
+  res.send(JSON.stringify({
+    ping: 'ping',
+    host: os.hostname(),
+  }));
 });
 
 app.post('/compile', (req, res) => {
