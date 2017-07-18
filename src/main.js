@@ -8,6 +8,7 @@ const app = express();
 
 app.use(bodyParser.raw({
   type: () => true,
+  limit: '10mb',
 }));
 
 app.get('/', (req, res) => {
