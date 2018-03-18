@@ -2,5 +2,6 @@ wkhtmltopdf:
   build: .
   volumes:
     - .:/app
+    - ./shell/wrapper.sh:/usr/bin/wkhtmltopdf
   ports:
     - "81:80"

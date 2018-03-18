@@ -40,4 +40,4 @@ ENV PORT=80
 RUN npm i -g pm2 \
   && npm install --production
 
-CMD [ "pm2-runtime", "process.yml" ]
+CMD [ "/app/entrypoint.sh" ]
