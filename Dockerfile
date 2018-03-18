@@ -1,7 +1,6 @@
-FROM keymetrics/pm2:8-alpine
+FROM node:8-alpine
 
 EXPOSE 80
-
 
 WORKDIR /app
 COPY . /app
@@ -35,15 +34,10 @@ RUN apk add --no-cache \
     && cp /app/shell/wrapper.sh /usr/bin/wkhtmltopdf \
     && chmod +x /usr/bin/wkhtmltopdf
 
-
-
 ENV PORT=80
 
-# install sys deps
-#RUN apk add --update bash
-
-
 # Install app npm dependencies
-RUN npm install --production
+RUN npm i -g pm2 \
+  && npm install --production
 
 CMD [ "pm2-runtime", "process.yml" ]
