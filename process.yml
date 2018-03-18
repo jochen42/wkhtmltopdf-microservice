@@ -1,0 +1,5 @@
+apps:
+  - script: src/index.js
+    name: html2pdf-api
+    instances: 3
+    exec_mode: cluster

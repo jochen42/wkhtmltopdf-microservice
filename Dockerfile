@@ -10,7 +10,20 @@ RUN apk add --no-cache \
       dbus \
 
     # install bash, because node-wkhtmltopdf spawns it
-    && apk add --no-cache bash \
+    && apk add --no-cache \
+      bash \
+
+    # install curl to download xvfb-run and coreutils as dependency
+    && apk add --no-cache \
+      curl \
+      coreutils \
+    # in alpine mktemp does not work with dynamic TMPDIR, fix TMPDIR for xvfb-run
+    && export TMPDIR=/tmp \
+    && mkdir -p /tmp \
+
+    # download xvfb-run script
+    && curl 'https://gist.githubusercontent.com/tyleramos/3744901/raw/49079c854eff738b586f8a186fc186934c2a3961/xvfb-run.sh' -o /usr/bin/xvfb-run \
+    && chmod +x /usr/bin/xvfb-run \
 
     # Install wkhtmltopdf from `testing` repository
     && apk add qt5-qtbase-dev \
@@ -18,14 +31,14 @@ RUN apk add --no-cache \
       --no-cache \
       --repository https://dl-3.alpinelinux.org/alpine/edge/testing/ \
       --allow-untrusted \
+
+    # cleanup apt cache
     && rm -rf /var/cache/apk/* \
 
     # Wrapper for xvfb
     && mv /usr/bin/wkhtmltopdf /usr/bin/wkhtmltopdf-origin && \
     echo $'#!/usr/bin/env sh\n\
-Xvfb :0 -screen 0 1024x768x24 -ac +extension GLX +render -noreset & \n\
-DISPLAY=:0.0 wkhtmltopdf-origin $@ \n\
-killall Xvfb\
+xvfb-run --auto-servernum wkhtmltopdf-origin --use-xserver\
 ' > /usr/bin/wkhtmltopdf && \
     chmod +x /usr/bin/wkhtmltopdf
 
@@ -40,7 +53,8 @@ WORKDIR /app
 COPY . /app
 
 # Install app npm dependencies
-RUN npm install --production
+RUN npm install pm2@latest -g \
+  && npm install --production
 
 
-CMD [ "npm","run","start" ]
+CMD [ "pm2", "start", "process.yml" ]
