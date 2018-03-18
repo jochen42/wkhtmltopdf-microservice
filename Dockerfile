@@ -1,4 +1,4 @@
-FROM node:7-alpine
+FROM keymetrics/pm2:8-alpine
 
 EXPOSE 80
 
@@ -53,8 +53,6 @@ WORKDIR /app
 COPY . /app
 
 # Install app npm dependencies
-RUN npm install pm2@latest -g \
-  && npm install --production
+RUN npm install --production
 
-
-CMD [ "pm2", "start", "process.yml" ]
+CMD [ "pm2-runtime", "process.yml" ]
